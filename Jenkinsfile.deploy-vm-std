@@ -27,6 +27,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'npm ci'
+                sh 'sed -i "/generator erd/,/^}/d" prisma/schema.prisma || true'
                 sh 'npm run prisma:generate'
                 sh 'npm run build'
                 sh 'npm run test:e2e'
