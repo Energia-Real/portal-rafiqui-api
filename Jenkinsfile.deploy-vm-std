@@ -27,6 +27,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'npm ci'
+                sh 'npm run prisma:generate'
                 sh 'npm run build'
                 sh 'npm run test:e2e'
             }
