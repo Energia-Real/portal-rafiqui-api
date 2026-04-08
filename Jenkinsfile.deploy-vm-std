@@ -1,0 +1,134 @@
+pipeline {
+    agent any
+    
+    environment {
+        ACR_URL = "eracr.azurecr.io"
+        IMAGE_NAME = "portal-rafiqui-api"
+        TAG = "${env.BUILD_NUMBER}"
+        SSH_CRED_ID = "vm-target-ssh-key" 
+        TARGET_VM_IP = "YOUR_STD_VM_PUBLIC_IP"
+        TARGET_VM_PRIVATE_IP = "YOUR_STD_VM_PRIVATE_IP"
+        ENVIRONMENT = "prod"
+        API_PORT = "3001"
+    }
+    
+    stages {
+        stage('Validate Branch') {
+            steps {
+                script {
+                    def branch = env.GIT_BRANCH.replace('origin/', '')
+                    if (branch != 'main') {
+                        error("Rama ${branch} no destinada para despliegue. Solo main se permite para producción.")
+                    }
+                }
+            }
+        }
+
+        stage('Checkout & Build') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-org/portal-rafiqui-api.git'
+                sh 'npm ci'
+                sh 'npm run build'
+                sh 'npm run test:e2e'
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
+                sh """
+                    az acr login --name eracr
+                    
+                    docker build -t ${ACR_URL}/${IMAGE_NAME}:${TAG} .
+                    docker push ${ACR_URL}/${IMAGE_NAME}:${TAG}
+                    docker tag ${ACR_URL}/${IMAGE_NAME}:${TAG} ${ACR_URL}/${IMAGE_NAME}:latest
+                    docker push ${ACR_URL}/${IMAGE_NAME}:latest
+                """
+            }
+        }
+
+        stage('Deploy to VM') {
+            steps {
+                withCredentials([
+                    file(credentialsId: 'portal-rafiqui-api-env-prod', variable: 'ENV_FILE'),
+                    string(credentialsId: "jwt-rafiqui-prod", variable: 'JWT_SECRET'),
+                    string(credentialsId: "blockchain-rafiqui-prod", variable: 'BLOCKCHAIN_PRIVATE_KEY'),
+                    string(credentialsId: "cloudinary-rafiqui-prod", variable: 'CLOUDINARY_API_SECRET')
+                ]) {
+                    sshagent([SSH_CRED_ID]) {
+                        sh "ssh-keygen -f '/var/jenkins_home/.ssh/known_hosts' -R '${TARGET_VM_IP}' || true"
+                        
+                        sh """
+        ssh -o StrictHostKeyChecking=no azureuser@${TARGET_VM_IP} '
+            az login --identity --client-id \$(cat /etc/azure-identity-client-id)
+            az acr login --name eracr
+            
+            # Stop and remove existing container
+            docker stop ${IMAGE_NAME}-${ENVIRONMENT} || true
+            docker rm ${IMAGE_NAME}-${ENVIRONMENT} || true
+            
+            # Create .env file from uploaded file
+            cp ${ENV_FILE} .env-${IMAGE_NAME}-${ENVIRONMENT}
+            
+            # Override sensitive values with Jenkins credentials
+            sed -i "s/JWT_SECRET=.*/JWT_SECRET=${JWT_SECRET}/" .env-${IMAGE_NAME}-${ENVIRONMENT}
+            sed -i "s/BLOCKCHAIN_PRIVATE_KEY=.*/BLOCKCHAIN_PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}/" .env-${IMAGE_NAME}-${ENVIRONMENT}
+            sed -i "s/CLOUDINARY_API_SECRET=.*/CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}/" .env-${IMAGE_NAME}-${ENVIRONMENT}
+            
+            # Deploy container
+            docker run -d \\
+                --name ${IMAGE_NAME}-${ENVIRONMENT} \\
+                --restart unless-stopped \\
+                -p ${TARGET_VM_PRIVATE_IP}:${API_PORT}:3001 \\
+                --env-file .env-${IMAGE_NAME}-${ENVIRONMENT} \\
+                ${ACR_URL}/${IMAGE_NAME}:latest
+                
+            docker image prune -f
+        '
+        """
+                    }
+                }
+            }
+        }
+
+        stage('Validate Deployment') {
+            steps {
+                script {
+                    sleep(30)
+                    sshagent([SSH_CRED_ID]) {
+                        sh "ssh-keygen -f '/var/jenkins_home/.ssh/known_hosts' -R '${TARGET_VM_IP}' || true"
+                        
+                        def apiStatus = sh(
+                            script: "ssh -o StrictHostKeyChecking=no azureuser@${TARGET_VM_IP} \"docker ps --filter name=${IMAGE_NAME}-${ENVIRONMENT} --format '{{.Status}}'\"",
+                            returnStdout: true
+                        ).trim()
+                        
+                        def apiHealth = sh(
+                            script: "ssh -o StrictHostKeyChecking=no azureuser@${TARGET_VM_IP} \"curl -f http://localhost:${API_PORT}/health || echo 'FAILED'\"",
+                            returnStdout: true
+                        ).trim()
+                        
+                        if (!apiStatus.contains('Up') || apiHealth.contains('FAILED')) {
+                            echo "⚠️ API not healthy. Showing logs:"
+                            sh "ssh -o StrictHostKeyChecking=no azureuser@${TARGET_VM_IP} \"docker logs ${IMAGE_NAME}-${ENVIRONMENT} --tail 20\" || true"
+                            error("Portal Rafiqui API is not running or not healthy.")
+                        }
+                        
+                        echo "✅ Portal Rafiqui API deployed successfully!"
+                        echo "🚀 API: http://${TARGET_VM_PRIVATE_IP}:${API_PORT}"
+                        echo "📊 Health: http://${TARGET_VM_PRIVATE_IP}:${API_PORT}/health"
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        success { 
+            echo "¡Despliegue exitoso de Portal Rafiqui API!" 
+            echo "🚀 API: http://${TARGET_VM_PRIVATE_IP}:${API_PORT}"
+        }
+        failure { 
+            echo "Error en el pipeline de Portal Rafiqui API." 
+        }
+    }
+}
