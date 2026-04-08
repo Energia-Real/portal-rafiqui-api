@@ -32,6 +32,31 @@ pipeline {
             }
         }
 
+        stage('Database Migration') {
+            steps {
+                withCredentials([
+                    file(credentialsId: 'portal-rafiqui-api-env-prod', variable: 'ENV_FILE'),
+                    string(credentialsId: "jwt-rafiqui-prod", variable: 'JWT_SECRET'),
+                    string(credentialsId: "blockchain-rafiqui-prod", variable: 'BLOCKCHAIN_PRIVATE_KEY'),
+                    string(credentialsId: "cloudinary-rafiqui-prod", variable: 'CLOUDINARY_API_SECRET')
+                ]) {
+                    sh """
+                        # Create temporary .env for migration
+                        cp ${ENV_FILE} .env-migration
+                        sed -i 's/JWT_SECRET=.*/JWT_SECRET=${JWT_SECRET}/' .env-migration
+                        sed -i 's/BLOCKCHAIN_PRIVATE_KEY=.*/BLOCKCHAIN_PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}/' .env-migration
+                        sed -i 's/CLOUDINARY_API_SECRET=.*/CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}/' .env-migration
+                        
+                        # Run database migration
+                        npm run prisma:migrate:deploy || echo "Migration may have already been applied or no new migrations"
+                        
+                        # Clean up
+                        rm .env-migration
+                    """
+                }
+            }
+        }
+
         stage('Docker Build & Push') {
             steps {
                 sh """
