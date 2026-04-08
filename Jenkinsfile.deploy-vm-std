@@ -31,24 +31,12 @@ pipeline {
                 sh 'npm run prisma:generate'
                 sh 'npm run build'
                 withCredentials([
-                    file(credentialsId: 'portal-rafiqui-api-env-prod', variable: 'ENV_FILE'),
-                    string(credentialsId: "jwt-rafiqui-prod", variable: 'JWT_SECRET'),
-                    string(credentialsId: "blockchain-rafiqui-prod", variable: 'BLOCKCHAIN_PRIVATE_KEY'),
-                    string(credentialsId: "cloudinary-rafiqui-prod", variable: 'CLOUDINARY_API_SECRET')
+                    file(credentialsId: 'portal-rafiqui-api-env-prod', variable: 'ENV_FILE')
                 ]) {
                     sh """
-                        # Create temporary .env for tests
-                        cp ${ENV_FILE} .env-test
-                        sed -i 's/JWT_SECRET=.*/JWT_SECRET=${JWT_SECRET}/' .env-test
-                        sed -i 's/BLOCKCHAIN_PRIVATE_KEY=.*/BLOCKCHAIN_PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}/' .env-test
-                        sed -i 's/CLOUDINARY_API_SECRET=.*/CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}/' .env-test
-                        
-                        # Load environment and run tests
-                        export \$(cat .env-test | xargs)
+                        # Load environment from uploaded .env file and run tests
+                        export \$(cat ${ENV_FILE} | xargs)
                         npm run test:e2e
-                        
-                        # Clean up
-                        rm .env-test
                     """
                 }
             }
@@ -57,23 +45,12 @@ pipeline {
         stage('Database Migration') {
             steps {
                 withCredentials([
-                    file(credentialsId: 'portal-rafiqui-api-env-prod', variable: 'ENV_FILE'),
-                    string(credentialsId: "jwt-rafiqui-prod", variable: 'JWT_SECRET'),
-                    string(credentialsId: "blockchain-rafiqui-prod", variable: 'BLOCKCHAIN_PRIVATE_KEY'),
-                    string(credentialsId: "cloudinary-rafiqui-prod", variable: 'CLOUDINARY_API_SECRET')
+                    file(credentialsId: 'portal-rafiqui-api-env-prod', variable: 'ENV_FILE')
                 ]) {
                     sh """
-                        # Create temporary .env for migration
-                        cp ${ENV_FILE} .env-migration
-                        sed -i 's/JWT_SECRET=.*/JWT_SECRET=${JWT_SECRET}/' .env-migration
-                        sed -i 's/BLOCKCHAIN_PRIVATE_KEY=.*/BLOCKCHAIN_PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}/' .env-migration
-                        sed -i 's/CLOUDINARY_API_SECRET=.*/CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}/' .env-migration
-                        
-                        # Run database migration
+                        # Load environment from uploaded .env file and run migration
+                        export \$(cat ${ENV_FILE} | xargs)
                         npm run prisma:migrate:deploy || echo "Migration may have already been applied or no new migrations"
-                        
-                        # Clean up
-                        rm .env-migration
                     """
                 }
             }
@@ -95,10 +72,7 @@ pipeline {
         stage('Deploy to VM') {
             steps {
                 withCredentials([
-                    file(credentialsId: 'portal-rafiqui-api-env-prod', variable: 'ENV_FILE'),
-                    string(credentialsId: "jwt-rafiqui-prod", variable: 'JWT_SECRET'),
-                    string(credentialsId: "blockchain-rafiqui-prod", variable: 'BLOCKCHAIN_PRIVATE_KEY'),
-                    string(credentialsId: "cloudinary-rafiqui-prod", variable: 'CLOUDINARY_API_SECRET')
+                    file(credentialsId: 'portal-rafiqui-api-env-prod', variable: 'ENV_FILE')
                 ]) {
                     sshagent([SSH_CRED_ID]) {
                         sh "ssh-keygen -f '/var/jenkins_home/.ssh/known_hosts' -R '${TARGET_VM_IP}' || true"
@@ -112,13 +86,8 @@ pipeline {
             docker stop ${IMAGE_NAME}-${ENVIRONMENT} || true
             docker rm ${IMAGE_NAME}-${ENVIRONMENT} || true
             
-            # Create .env file from uploaded file
+            # Copy .env file to VM
             cp ${ENV_FILE} .env-${IMAGE_NAME}-${ENVIRONMENT}
-            
-            # Override sensitive values with Jenkins credentials
-            sed -i "s/JWT_SECRET=.*/JWT_SECRET=${JWT_SECRET}/" .env-${IMAGE_NAME}-${ENVIRONMENT}
-            sed -i "s/BLOCKCHAIN_PRIVATE_KEY=.*/BLOCKCHAIN_PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}/" .env-${IMAGE_NAME}-${ENVIRONMENT}
-            sed -i "s/CLOUDINARY_API_SECRET=.*/CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}/" .env-${IMAGE_NAME}-${ENVIRONMENT}
             
             # Deploy container
             docker run -d \\
