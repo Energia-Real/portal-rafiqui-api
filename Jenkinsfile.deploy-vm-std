@@ -35,7 +35,9 @@ pipeline {
                 ]) {
                     sh """
                         # Load environment from uploaded .env file and run tests
-                        export \$(cat ${ENV_FILE} | xargs)
+                        set -a
+                        source "${ENV_FILE}"
+                        set +a
                         npm run test:e2e
                     """
                 }
@@ -49,7 +51,9 @@ pipeline {
                 ]) {
                     sh """
                         # Load environment from uploaded .env file and run migration
-                        export \$(cat ${ENV_FILE} | xargs)
+                        set -a
+                        source "${ENV_FILE}"
+                        set +a
                         npm run prisma:migrate:deploy || echo "Migration may have already been applied or no new migrations"
                     """
                 }
