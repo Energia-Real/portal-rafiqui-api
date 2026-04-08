@@ -10,13 +10,13 @@ export declare class AssetsService {
     constructor(prisma: PrismaService, blockchainService: BlockchainService);
     create(createAssetDto: CreateAssetDto): Promise<{
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.AssetStatus;
-        nfcTagId: string | null;
-        qrCode: string | null;
+        createdAt: Date;
         brand: string | null;
         model: string | null;
         collectionRequestId: string | null;
+        nfcTagId: string | null;
+        qrCode: string | null;
         inspectorId: string | null;
         inspectionStartedAt: Date | null;
         inspectedAt: Date | null;
@@ -36,13 +36,13 @@ export declare class AssetsService {
     }>;
     scan(scanAssetDto: any): Promise<{
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.AssetStatus;
-        nfcTagId: string | null;
-        qrCode: string | null;
+        createdAt: Date;
         brand: string | null;
         model: string | null;
         collectionRequestId: string | null;
+        nfcTagId: string | null;
+        qrCode: string | null;
         inspectorId: string | null;
         inspectionStartedAt: Date | null;
         inspectedAt: Date | null;
@@ -63,9 +63,13 @@ export declare class AssetsService {
     findAll(status?: string, nfcTagId?: string, collectionRequestId?: string, qrCode?: string): Promise<({
         collectionRequest: {
             id: string;
-            createdAt: Date;
-            donorId: string | null;
             pickupAddress: string;
+            street: string | null;
+            exteriorNumber: string | null;
+            interiorNumber: string | null;
+            colonia: string | null;
+            municipio: string | null;
+            estado: string | null;
             city: string;
             postalCode: string;
             estimatedCount: number;
@@ -74,18 +78,22 @@ export declare class AssetsService {
             contactPhone: string;
             notes: string | null;
             status: string;
-            assignedCollectorId: string | null;
+            wantsToBePartner: boolean;
+            createdAt: Date;
             completedAt: Date | null;
+            donorId: string | null;
+            assignedCollectorId: string | null;
+            partnerId: string | null;
         } | null;
     } & {
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.AssetStatus;
-        nfcTagId: string | null;
-        qrCode: string | null;
+        createdAt: Date;
         brand: string | null;
         model: string | null;
         collectionRequestId: string | null;
+        nfcTagId: string | null;
+        qrCode: string | null;
         inspectorId: string | null;
         inspectionStartedAt: Date | null;
         inspectedAt: Date | null;
@@ -105,13 +113,13 @@ export declare class AssetsService {
     })[]>;
     update(id: string, data: UpdateAssetDto): Promise<{
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.AssetStatus;
-        nfcTagId: string | null;
-        qrCode: string | null;
+        createdAt: Date;
         brand: string | null;
         model: string | null;
         collectionRequestId: string | null;
+        nfcTagId: string | null;
+        qrCode: string | null;
         inspectorId: string | null;
         inspectionStartedAt: Date | null;
         inspectedAt: Date | null;

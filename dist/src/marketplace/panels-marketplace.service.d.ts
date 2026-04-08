@@ -12,19 +12,19 @@ export declare class PanelsMarketplaceService {
     getPanelDetails(assetId: string): Promise<PanelDetailsDto>;
     getPanelOrderHistory(buyerId?: string): Promise<({
         asset: {
-            qrCode: string | null;
             brand: string | null;
             model: string | null;
+            qrCode: string | null;
             tokenId: string | null;
         };
         buyer: {
-            email: string;
             name: string;
+            email: string;
         } | null;
     } & {
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.OrderStatus;
+        createdAt: Date;
         completedAt: Date | null;
         buyerWallet: string;
         blockchainTxHash: string | null;

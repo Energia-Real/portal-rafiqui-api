@@ -19,10 +19,11 @@ let TriageEngineService = TriageEngineService_1 = class TriageEngineService {
         client_1.InspectionResult.RECYCLE,
     ];
     evaluatePanel(voltage, amperage, physicalCondition) {
-        const result = client_1.InspectionResult.ART;
+        const sequenceIndex = this.inspectionCounter % this.resultSequence.length;
+        const result = this.resultSequence[sequenceIndex];
         this.inspectionCounter++;
         this.logger.log(`Panel evaluado - Contador: ${this.inspectionCounter}, ` +
-            `Resultado: ${result} [FORZADO PARA PRUEBAS] (V: ${voltage}, A: ${amperage}, Cond: ${physicalCondition})`);
+            `Resultado: ${result} (V: ${voltage}, A: ${amperage}, Cond: ${physicalCondition})`);
         return result;
     }
     getInspectionCount() {

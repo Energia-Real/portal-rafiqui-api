@@ -55,7 +55,7 @@ let CollectionRequestsController = class CollectionRequestsController {
 exports.CollectionRequestsController = CollectionRequestsController;
 __decorate([
     (0, common_1.Post)(),
-    openapi.ApiResponse({ status: 201 }),
+    openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_collection_request_dto_1.CreateCollectionRequestDto]),
@@ -63,8 +63,6 @@ __decorate([
 ], CollectionRequestsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Obtener solicitudes con filtros opcionales' }),
     (0, swagger_1.ApiQuery)({ name: 'status', required: false, description: 'Estados separados por coma (e.g. PENDING,ASSIGNED)' }),
     (0, swagger_1.ApiQuery)({ name: 'myRequests', required: false, description: 'Si es true, filtra solo las solicitudes asignadas al usuario autenticado' }),

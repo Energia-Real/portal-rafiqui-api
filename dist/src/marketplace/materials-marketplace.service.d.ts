@@ -11,44 +11,44 @@ export declare class MaterialsMarketplaceService {
     getOrdersByBuyer(buyerId: string): Promise<({
         buyer: {
             id: string;
-            email: string;
             name: string;
+            email: string;
         } | null;
     } & {
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.OrderStatus;
+        createdAt: Date;
         completedAt: Date | null;
         buyerWallet: string;
         blockchainTxHash: string | null;
+        pricePerKg: number;
         buyerId: string | null;
         materialType: import(".prisma/client").$Enums.MaterialType;
         quantityKg: number;
         destination: import(".prisma/client").$Enums.MaterialDestination;
         destinationNotes: string | null;
-        pricePerKg: number;
         totalPrice: number;
     })[]>;
     getOrderById(orderId: string): Promise<{
         buyer: {
             id: string;
-            email: string;
             name: string;
+            email: string;
             walletAddress: string | null;
         } | null;
     } & {
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.OrderStatus;
+        createdAt: Date;
         completedAt: Date | null;
         buyerWallet: string;
         blockchainTxHash: string | null;
+        pricePerKg: number;
         buyerId: string | null;
         materialType: import(".prisma/client").$Enums.MaterialType;
         quantityKg: number;
         destination: import(".prisma/client").$Enums.MaterialDestination;
         destinationNotes: string | null;
-        pricePerKg: number;
         totalPrice: number;
     }>;
 }

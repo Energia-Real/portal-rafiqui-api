@@ -1,3 +1,4 @@
+import { InspectionResult } from '@prisma/client';
 export declare class CreateInspectionDto {
     assetId: string;
     inspectorId: string;
@@ -6,4 +7,5 @@ export declare class CreateInspectionDto {
     physicalCondition: string;
     photoUrl?: string;
     notes?: string;
+    aiRecommendation: InspectionResult;
 }

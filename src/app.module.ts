@@ -14,9 +14,11 @@ import { MarketplaceModule } from './marketplace/marketplace.module';
 import { RecycleModule } from './recycle/recycle.module';
 import { MetadataModule } from './metadata/metadata.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { SolarPanelsModule } from './solar-panels/solar-panels.module';
+import { PartnersModule } from './partners/partners.module';
 
 @Module({
-  imports: [PrismaModule, CollectionRequestsModule, AssetsModule, InspectionsModule, StatisticsModule, ArtModule, AuthModule, BlockchainModule, CloudinaryModule, MarketplaceModule, RecycleModule, MetadataModule, DashboardModule],
+  imports: [PrismaModule, CollectionRequestsModule, AssetsModule, InspectionsModule, StatisticsModule, ArtModule, AuthModule, BlockchainModule, CloudinaryModule, MarketplaceModule, RecycleModule, MetadataModule, DashboardModule, SolarPanelsModule, PartnersModule],
   controllers: [AppController],
   providers: [AppService],
 })

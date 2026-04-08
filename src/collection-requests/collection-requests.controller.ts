@@ -18,8 +18,6 @@ export class CollectionRequestsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Obtener solicitudes con filtros opcionales' })
   @ApiQuery({ name: 'status', required: false, description: 'Estados separados por coma (e.g. PENDING,ASSIGNED)' })
   @ApiQuery({ name: 'myRequests', required: false, description: 'Si es true, filtra solo las solicitudes asignadas al usuario autenticado' })

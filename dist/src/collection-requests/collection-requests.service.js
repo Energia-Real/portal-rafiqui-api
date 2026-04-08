@@ -17,9 +17,31 @@ let CollectionRequestsService = class CollectionRequestsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    create(createCollectionRequestDto) {
+    async create(createCollectionRequestDto) {
+        const { panels, ...requestData } = createCollectionRequestDto;
         return this.prisma.collectionRequest.create({
-            data: createCollectionRequestDto,
+            data: {
+                ...requestData,
+                panels: panels?.length ? {
+                    create: panels.map((panel) => ({
+                        quantity: panel.quantity,
+                        brand: panel.brand,
+                        model: panel.model,
+                        catalogId: panel.catalogId,
+                        isCustom: panel.isCustom,
+                        customBrand: panel.customBrand,
+                        customModel: panel.customModel,
+                    })),
+                } : undefined,
+            },
+            include: {
+                panels: {
+                    include: {
+                        catalog: true,
+                    },
+                },
+                partner: true,
+            },
         });
     }
     async findAll(status, assignedCollectorId) {
@@ -34,13 +56,25 @@ let CollectionRequestsService = class CollectionRequestsService {
         return this.prisma.collectionRequest.findMany({
             where,
             orderBy: { createdAt: 'desc' },
-            include: { assets: true },
+            include: {
+                assets: true,
+                panels: {
+                    include: { catalog: true },
+                },
+                partner: true,
+            },
         });
     }
     findOne(id) {
         return this.prisma.collectionRequest.findUnique({
             where: { id },
-            include: { assets: true },
+            include: {
+                assets: true,
+                panels: {
+                    include: { catalog: true },
+                },
+                partner: true,
+            },
         });
     }
     async update(id, updateData) {

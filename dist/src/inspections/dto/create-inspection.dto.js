@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateInspectionDto = void 0;
 const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const client_1 = require("@prisma/client");
 class CreateInspectionDto {
     assetId;
     inspectorId;
@@ -20,8 +21,9 @@ class CreateInspectionDto {
     physicalCondition;
     photoUrl;
     notes;
+    aiRecommendation;
     static _OPENAPI_METADATA_FACTORY() {
-        return { assetId: { required: true, type: () => String, format: "uuid" }, inspectorId: { required: true, type: () => String }, measuredVoltage: { required: true, type: () => Number }, measuredAmps: { required: true, type: () => Number }, physicalCondition: { required: true, type: () => String }, photoUrl: { required: false, type: () => String, format: "uri" }, notes: { required: false, type: () => String } };
+        return { assetId: { required: true, type: () => String, format: "uuid" }, inspectorId: { required: true, type: () => String }, measuredVoltage: { required: true, type: () => Number }, measuredAmps: { required: true, type: () => Number }, physicalCondition: { required: true, type: () => String }, photoUrl: { required: false, type: () => String, format: "uri" }, notes: { required: false, type: () => String }, aiRecommendation: { required: true, type: () => Object } };
     }
 }
 exports.CreateInspectionDto = CreateInspectionDto;
@@ -61,4 +63,9 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateInspectionDto.prototype, "notes", void 0);
+__decorate([
+    (0, class_validator_1.IsEnum)(client_1.InspectionResult),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateInspectionDto.prototype, "aiRecommendation", void 0);
 //# sourceMappingURL=create-inspection.dto.js.map

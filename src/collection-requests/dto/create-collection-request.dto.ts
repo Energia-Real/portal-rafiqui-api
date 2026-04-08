@@ -1,4 +1,7 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Min, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { PanelEntryDto } from './panel-entry.dto';
 
 export class CreateCollectionRequestDto {
   @IsUUID()
@@ -11,6 +14,30 @@ export class CreateCollectionRequestDto {
 
   @IsString()
   @IsNotEmpty()
+  street: string;
+
+  @IsString()
+  @IsNotEmpty()
+  exteriorNumber: string;
+
+  @IsString()
+  @IsOptional()
+  interiorNumber?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  colonia: string;
+
+  @IsString()
+  @IsNotEmpty()
+  municipio: string;
+
+  @IsString()
+  @IsNotEmpty()
+  estado: string;
+
+  @IsString()
+  @IsNotEmpty()
   city: string;
 
   @IsString()
@@ -18,12 +45,11 @@ export class CreateCollectionRequestDto {
   postalCode: string;
 
   @IsNumber()
-  @IsNotEmpty()
+  @Min(1)
   estimatedCount: number;
 
-  @IsString()
-  @IsNotEmpty()
-  panelType: string;
+  @IsEnum(['residential', 'industrial'])
+  panelType: 'residential' | 'industrial';
 
   @IsString()
   @IsNotEmpty()
@@ -36,4 +62,24 @@ export class CreateCollectionRequestDto {
   @IsString()
   @IsOptional()
   notes?: string;
+
+  @ApiPropertyOptional({ 
+    description: 'Lista de paneles a recolectar', 
+    type: [PanelEntryDto] 
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PanelEntryDto)
+  panels?: PanelEntryDto[];
+
+  @ApiPropertyOptional({ description: 'ID del socio/partner asociado' })
+  @IsOptional()
+  @IsUUID()
+  partnerId?: string;
+
+  @ApiPropertyOptional({ description: 'Indica si el usuario quiere convertirse en socio', default: false })
+  @IsOptional()
+  @IsBoolean()
+  wantsToBePartner?: boolean;
 }

@@ -17,8 +17,8 @@ export declare class RecycleService {
         asset: {
             inspection: {
                 id: string;
-                createdAt: Date;
                 notes: string | null;
+                createdAt: Date;
                 inspectorId: string;
                 measuredVoltage: number;
                 assetId: string;
@@ -30,26 +30,26 @@ export declare class RecycleService {
             recycleRecord: {
                 id: string;
                 createdAt: Date;
-                ipfsHash: string | null;
                 blockchainTxHash: string | null;
+                assetId: string;
+                operatorId: string;
+                panelWeightKg: number;
                 aluminumKg: number;
                 glassKg: number;
                 siliconKg: number;
                 copperKg: number;
-                assetId: string;
-                operatorId: string;
-                panelWeightKg: number;
                 materialsTxHash: string | null;
+                ipfsHash: string | null;
             } | null;
         } & {
             id: string;
-            createdAt: Date;
             status: import(".prisma/client").$Enums.AssetStatus;
-            nfcTagId: string | null;
-            qrCode: string | null;
+            createdAt: Date;
             brand: string | null;
             model: string | null;
             collectionRequestId: string | null;
+            nfcTagId: string | null;
+            qrCode: string | null;
             inspectorId: string | null;
             inspectionStartedAt: Date | null;
             inspectedAt: Date | null;
@@ -73,9 +73,9 @@ export declare class RecycleService {
     getRecycleHistory(limit?: number): Promise<({
         asset: {
             id: string;
-            qrCode: string | null;
             brand: string | null;
             model: string | null;
+            qrCode: string | null;
         };
         operator: {
             id: string;
@@ -84,15 +84,15 @@ export declare class RecycleService {
     } & {
         id: string;
         createdAt: Date;
-        ipfsHash: string | null;
         blockchainTxHash: string | null;
+        assetId: string;
+        operatorId: string;
+        panelWeightKg: number;
         aluminumKg: number;
         glassKg: number;
         siliconKg: number;
         copperKg: number;
-        assetId: string;
-        operatorId: string;
-        panelWeightKg: number;
         materialsTxHash: string | null;
+        ipfsHash: string | null;
     })[]>;
 }

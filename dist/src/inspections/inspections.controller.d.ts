@@ -7,8 +7,8 @@ export declare class InspectionsController {
         aiRecommendation: import(".prisma/client").$Enums.InspectionResult;
         blockchainStatus: string;
         id: string;
-        createdAt: Date;
         notes: string | null;
+        createdAt: Date;
         inspectorId: string;
         measuredVoltage: number;
         assetId: string;
@@ -19,13 +19,13 @@ export declare class InspectionsController {
     findAll(myInspections?: string, user?: any): Promise<({
         asset: {
             id: string;
-            createdAt: Date;
             status: import(".prisma/client").$Enums.AssetStatus;
-            nfcTagId: string | null;
-            qrCode: string | null;
+            createdAt: Date;
             brand: string | null;
             model: string | null;
             collectionRequestId: string | null;
+            nfcTagId: string | null;
+            qrCode: string | null;
             inspectorId: string | null;
             inspectionStartedAt: Date | null;
             inspectedAt: Date | null;
@@ -45,8 +45,8 @@ export declare class InspectionsController {
         };
     } & {
         id: string;
-        createdAt: Date;
         notes: string | null;
+        createdAt: Date;
         inspectorId: string;
         measuredVoltage: number;
         assetId: string;
@@ -67,13 +67,13 @@ export declare class InspectionsController {
     findOne(id: string): Promise<({
         asset: {
             id: string;
-            createdAt: Date;
             status: import(".prisma/client").$Enums.AssetStatus;
-            nfcTagId: string | null;
-            qrCode: string | null;
+            createdAt: Date;
             brand: string | null;
             model: string | null;
             collectionRequestId: string | null;
+            nfcTagId: string | null;
+            qrCode: string | null;
             inspectorId: string | null;
             inspectionStartedAt: Date | null;
             inspectedAt: Date | null;
@@ -93,8 +93,8 @@ export declare class InspectionsController {
         };
     } & {
         id: string;
-        createdAt: Date;
         notes: string | null;
+        createdAt: Date;
         inspectorId: string;
         measuredVoltage: number;
         assetId: string;

@@ -84,6 +84,12 @@ model User {
 model CollectionRequest {
   id             String   @id @default(uuid())
   pickupAddress  String
+  street         String?
+  exteriorNumber String?
+  interiorNumber String?
+  colonia        String?
+  municipio      String?
+  estado         String?
   city           String
   postalCode     String
   estimatedCount Int
@@ -96,9 +102,32 @@ model CollectionRequest {
   donor          User?    @relation("DonorRequests", fields: [donorId], references: [id])
   assignedCollectorId String?
   assignedCollector   User?    @relation("AssignedCollector", fields: [assignedCollectorId], references: [id])
+  partnerId      String?
+  partner        Partner? @relation(fields: [partnerId], references: [id])
+  wantsToBePartner Boolean @default(false)
   assets         Asset[]
+  panels         CollectionRequestPanel[]
   createdAt      DateTime @default(now())
   completedAt    DateTime?
+}
+
+model CollectionRequestPanel {
+  id                  String   @id @default(uuid())
+  collectionRequestId String
+  collectionRequest   CollectionRequest @relation(fields: [collectionRequestId], references: [id], onDelete: Cascade)
+  
+  quantity            Int
+  brand               String
+  model               String
+  
+  catalogId           String?
+  catalog             SolarPanelCatalog? @relation(fields: [catalogId], references: [id])
+  
+  isCustom            Boolean  @default(false)
+  customBrand         String?
+  customModel         String?
+  
+  createdAt           DateTime @default(now())
 }
 
 model Asset {
@@ -284,4 +313,125 @@ model ArtOrder {
   
   createdAt       DateTime     @default(now())
   completedAt     DateTime?
+}
+
+enum PanelTechnology {
+  MONOCRYSTALLINE
+  POLYCRYSTALLINE
+  PERC
+  TOPCON
+  HJT
+  BIFACIAL
+  THIN_FILM_CDTE
+  THIN_FILM_CIGS
+  THIN_FILM_ASI
+  ORGANIC
+  PEROVSKITE
+}
+
+enum PanelApplication {
+  RESIDENTIAL
+  COMMERCIAL
+  INDUSTRIAL
+  UTILITY
+  MOBILE
+  BIPV
+}
+
+model SolarPanelCatalog {
+  id                      String            @id @default(uuid())
+  
+  brand                   String
+  model                   String
+  technology              PanelTechnology
+  
+  powerWp                 Float
+  efficiencyPercent       Float
+  
+  vocV                    Float?
+  iscA                    Float?
+  vmppV                   Float?
+  imppA                   Float?
+  
+  lengthMm                Int?
+  widthMm                 Int?
+  thicknessMm             Int?
+  weightKg                Float?
+  
+  cellCount               Int?
+  tempCoefPmax            Float?
+  operatingTempMin        Int?
+  operatingTempMax        Int?
+  
+  productWarrantyYears    Int?
+  performanceWarrantyYears Int?
+  performanceWarrantyPercent Float?
+  
+  fireClass               String?
+  certifications          String?
+  application             PanelApplication?
+  
+  country                 String?
+  tier                    Int?
+  
+  isActive                Boolean           @default(true)
+  
+  collectionRequestPanels CollectionRequestPanel[]
+  
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
+}
+
+enum PartnerType {
+  SOLAR_INSTALLER
+  MANUFACTURER
+  DISTRIBUTOR
+  RECYCLER
+  ENERGY_PROVIDER
+  OTHER
+}
+
+enum PartnerStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+  SUSPENDED
+}
+
+model Partner {
+  id                String        @id @default(uuid())
+  
+  name              String        @unique
+  slug              String?       @unique
+  
+  type              PartnerType   @default(OTHER)
+  status            PartnerStatus @default(ACTIVE)
+  
+  contactName       String?
+  contactEmail      String?
+  contactPhone      String?
+  
+  address           String?
+  city              String?
+  state             String?
+  country           String?
+  postalCode        String?
+  
+  website           String?
+  logoUrl           String?
+  description       String?
+  
+  taxId             String?
+  
+  panelsCollected   Int           @default(0)
+  panelsRecycled    Int           @default(0)
+  
+  notes             String?
+  
+  isActive          Boolean       @default(true)
+  
+  collectionRequests CollectionRequest[]
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 }

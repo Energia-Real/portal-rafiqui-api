@@ -49,14 +49,6 @@ let ArtMarketplaceService = ArtMarketplaceService_1 = class ArtMarketplaceServic
         if (!artPiece.tokenId) {
             throw new common_1.BadRequestException('Esta obra no tiene token en blockchain');
         }
-        if (buyerId) {
-            const userExists = await this.prisma.user.findUnique({
-                where: { id: buyerId },
-            });
-            if (!userExists) {
-                throw new common_1.BadRequestException('Usuario comprador no encontrado');
-            }
-        }
         const order = await this.prisma.artOrder.create({
             data: {
                 artPieceId,

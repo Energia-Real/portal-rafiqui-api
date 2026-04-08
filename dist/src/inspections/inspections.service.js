@@ -27,14 +27,13 @@ let InspectionsService = InspectionsService_1 = class InspectionsService {
         this.blockchainService = blockchainService;
     }
     async create(createInspectionDto) {
-        const { assetId, inspectorId, measuredVoltage, measuredAmps, physicalCondition, photoUrl, notes } = createInspectionDto;
+        const { assetId, inspectorId, measuredVoltage, measuredAmps, physicalCondition, photoUrl, notes, aiRecommendation } = createInspectionDto;
         const asset = await this.prisma.asset.findUnique({
             where: { id: assetId },
         });
         if (!asset) {
             throw new Error('Asset no encontrado');
         }
-        const aiRecommendation = this.triageEngine.evaluatePanel(measuredVoltage, measuredAmps, physicalCondition);
         let newAssetStatus;
         let blockchainStatus;
         switch (aiRecommendation) {

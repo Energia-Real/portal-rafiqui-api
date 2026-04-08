@@ -9,13 +9,13 @@ export declare class AssetsController {
     constructor(assetsService: AssetsService);
     create(createAssetDto: CreateAssetDto): Promise<{
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.AssetStatus;
-        nfcTagId: string | null;
-        qrCode: string | null;
+        createdAt: Date;
         brand: string | null;
         model: string | null;
         collectionRequestId: string | null;
+        nfcTagId: string | null;
+        qrCode: string | null;
         inspectorId: string | null;
         inspectionStartedAt: Date | null;
         inspectedAt: Date | null;
@@ -35,13 +35,13 @@ export declare class AssetsController {
     }>;
     scan(scanAssetDto: ScanAssetDto): Promise<{
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.AssetStatus;
-        nfcTagId: string | null;
-        qrCode: string | null;
+        createdAt: Date;
         brand: string | null;
         model: string | null;
         collectionRequestId: string | null;
+        nfcTagId: string | null;
+        qrCode: string | null;
         inspectorId: string | null;
         inspectionStartedAt: Date | null;
         inspectedAt: Date | null;
@@ -62,9 +62,13 @@ export declare class AssetsController {
     findAll(status?: string, nfcTagId?: string, qrCode?: string, collectionRequestId?: string): Promise<({
         collectionRequest: {
             id: string;
-            createdAt: Date;
-            donorId: string | null;
             pickupAddress: string;
+            street: string | null;
+            exteriorNumber: string | null;
+            interiorNumber: string | null;
+            colonia: string | null;
+            municipio: string | null;
+            estado: string | null;
             city: string;
             postalCode: string;
             estimatedCount: number;
@@ -73,18 +77,22 @@ export declare class AssetsController {
             contactPhone: string;
             notes: string | null;
             status: string;
-            assignedCollectorId: string | null;
+            wantsToBePartner: boolean;
+            createdAt: Date;
             completedAt: Date | null;
+            donorId: string | null;
+            assignedCollectorId: string | null;
+            partnerId: string | null;
         } | null;
     } & {
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.AssetStatus;
-        nfcTagId: string | null;
-        qrCode: string | null;
+        createdAt: Date;
         brand: string | null;
         model: string | null;
         collectionRequestId: string | null;
+        nfcTagId: string | null;
+        qrCode: string | null;
         inspectorId: string | null;
         inspectionStartedAt: Date | null;
         inspectedAt: Date | null;
@@ -104,13 +112,13 @@ export declare class AssetsController {
     })[]>;
     update(id: string, updateAssetDto: UpdateAssetDto): Promise<{
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.AssetStatus;
-        nfcTagId: string | null;
-        qrCode: string | null;
+        createdAt: Date;
         brand: string | null;
         model: string | null;
         collectionRequestId: string | null;
+        nfcTagId: string | null;
+        qrCode: string | null;
         inspectorId: string | null;
         inspectionStartedAt: Date | null;
         inspectedAt: Date | null;
@@ -131,13 +139,13 @@ export declare class AssetsController {
     validateForInspection(dto: ValidateForInspectionDto, user: any): Promise<ValidateForInspectionResponseDto>;
     findByQrCode(qrCode: string): Promise<{
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.AssetStatus;
-        nfcTagId: string | null;
-        qrCode: string | null;
+        createdAt: Date;
         brand: string | null;
         model: string | null;
         collectionRequestId: string | null;
+        nfcTagId: string | null;
+        qrCode: string | null;
         inspectorId: string | null;
         inspectionStartedAt: Date | null;
         inspectedAt: Date | null;
@@ -157,13 +165,13 @@ export declare class AssetsController {
     }>;
     findByNfcTag(nfcTagId: string): Promise<{
         id: string;
-        createdAt: Date;
         status: import(".prisma/client").$Enums.AssetStatus;
-        nfcTagId: string | null;
-        qrCode: string | null;
+        createdAt: Date;
         brand: string | null;
         model: string | null;
         collectionRequestId: string | null;
+        nfcTagId: string | null;
+        qrCode: string | null;
         inspectorId: string | null;
         inspectionStartedAt: Date | null;
         inspectedAt: Date | null;

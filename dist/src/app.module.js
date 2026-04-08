@@ -23,12 +23,14 @@ const marketplace_module_1 = require("./marketplace/marketplace.module");
 const recycle_module_1 = require("./recycle/recycle.module");
 const metadata_module_1 = require("./metadata/metadata.module");
 const dashboard_module_1 = require("./dashboard/dashboard.module");
+const solar_panels_module_1 = require("./solar-panels/solar-panels.module");
+const partners_module_1 = require("./partners/partners.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, collection_requests_module_1.CollectionRequestsModule, assets_module_1.AssetsModule, inspections_module_1.InspectionsModule, statistics_module_1.StatisticsModule, art_module_1.ArtModule, auth_module_1.AuthModule, blockchain_module_1.BlockchainModule, cloudinary_module_1.CloudinaryModule, marketplace_module_1.MarketplaceModule, recycle_module_1.RecycleModule, metadata_module_1.MetadataModule, dashboard_module_1.DashboardModule],
+        imports: [prisma_module_1.PrismaModule, collection_requests_module_1.CollectionRequestsModule, assets_module_1.AssetsModule, inspections_module_1.InspectionsModule, statistics_module_1.StatisticsModule, art_module_1.ArtModule, auth_module_1.AuthModule, blockchain_module_1.BlockchainModule, cloudinary_module_1.CloudinaryModule, marketplace_module_1.MarketplaceModule, recycle_module_1.RecycleModule, metadata_module_1.MetadataModule, dashboard_module_1.DashboardModule, solar_panels_module_1.SolarPanelsModule, partners_module_1.PartnersModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

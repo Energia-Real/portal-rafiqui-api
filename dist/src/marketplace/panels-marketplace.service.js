@@ -40,14 +40,6 @@ let PanelsMarketplaceService = PanelsMarketplaceService_1 = class PanelsMarketpl
         }
         const qrCode = asset.qrCode || asset.nfcTagId || asset.id;
         const price = this.calculatePanelPrice(asset);
-        if (buyerId) {
-            const userExists = await this.prisma.user.findUnique({
-                where: { id: buyerId },
-            });
-            if (!userExists) {
-                throw new common_1.BadRequestException('Usuario comprador no encontrado');
-            }
-        }
         const order = await this.prisma.panelOrder.create({
             data: {
                 assetId,
