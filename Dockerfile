@@ -6,21 +6,17 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
+# Install OpenSSL for Prisma engine detection
+RUN apk add --no-cache openssl
+
 # Copy source code
 COPY . .
 
 # Generate Prisma client
 RUN npx prisma generate
 
-# Debug: Check if source files exist
-RUN ls -la src/ || echo "src directory not found"
-
 # Build application
 RUN npm run build
-
-# Debug: Check if build succeeded
-RUN ls -la dist/ || echo "dist directory not found"
-RUN ls -la dist/main.js || echo "dist/main.js not found"
 
 # Production stage
 FROM node:20-alpine AS production
@@ -33,8 +29,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
 
-# Install curl for health checks
-RUN apk add --no-cache curl
+# Install curl for health checks and OpenSSL for Prisma
+RUN apk add --no-cache curl openssl
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
