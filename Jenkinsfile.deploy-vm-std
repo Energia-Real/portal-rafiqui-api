@@ -89,10 +89,13 @@ pipeline {
                 az login --identity
                 az acr login --name eracr
                 
+                # Pull latest image
+                docker pull ${ACR_URL}/${IMAGE_NAME}:latest
+
                 # Stop and remove existing container
                 docker stop ${IMAGE_NAME}-${ENVIRONMENT} || true
                 docker rm ${IMAGE_NAME}-${ENVIRONMENT} || true
-                
+
                 # Deploy container
                 docker run -d \\
                     --name ${IMAGE_NAME}-${ENVIRONMENT} \\
