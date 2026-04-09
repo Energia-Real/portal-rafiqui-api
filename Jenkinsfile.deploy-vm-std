@@ -82,27 +82,27 @@ pipeline {
                         sh "ssh-keygen -f '/var/jenkins_home/.ssh/known_hosts' -R '${TARGET_VM_IP}' || true"
                         
                         sh """
-        ssh -o StrictHostKeyChecking=no azureuser@${TARGET_VM_IP} '
-            az login --identity
-            az acr login --name eracr
+            # Copy .env file to VM first
+            scp -o StrictHostKeyChecking=no "${ENV_FILE}" azureuser@${TARGET_VM_IP}:".env-${IMAGE_NAME}-${ENVIRONMENT}"
             
-            # Stop and remove existing container
-            docker stop ${IMAGE_NAME}-${ENVIRONMENT} || true
-            docker rm ${IMAGE_NAME}-${ENVIRONMENT} || true
-            
-            # Copy .env file to VM
-            cp "${ENV_FILE}" ".env-${IMAGE_NAME}-${ENVIRONMENT}"
-            
-            # Deploy container
-            docker run -d \\
-                --name ${IMAGE_NAME}-${ENVIRONMENT} \\
-                --restart unless-stopped \\
-                -p ${TARGET_VM_PRIVATE_IP}:${API_PORT}:3001 \\
-                --env-file ".env-${IMAGE_NAME}-${ENVIRONMENT}" \\
-                ${ACR_URL}/${IMAGE_NAME}:latest
+            ssh -o StrictHostKeyChecking=no azureuser@${TARGET_VM_IP} '
+                az login --identity
+                az acr login --name eracr
                 
-            docker image prune -f
-        '
+                # Stop and remove existing container
+                docker stop ${IMAGE_NAME}-${ENVIRONMENT} || true
+                docker rm ${IMAGE_NAME}-${ENVIRONMENT} || true
+                
+                # Deploy container
+                docker run -d \\
+                    --name ${IMAGE_NAME}-${ENVIRONMENT} \\
+                    --restart unless-stopped \\
+                    -p ${TARGET_VM_PRIVATE_IP}:${API_PORT}:3001 \\
+                    --env-file ".env-${IMAGE_NAME}-${ENVIRONMENT}" \\
+                    ${ACR_URL}/${IMAGE_NAME}:latest
+                    
+                docker image prune -f
+            '
         """
                     }
                 }
