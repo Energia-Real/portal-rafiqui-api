@@ -19,6 +19,8 @@ async function bootstrap() {
     .setTitle('Rafiqui API')
     .setDescription('API para la plataforma de reciclaje de paneles solares Rafiqui')
     .setVersion('1.0')
+    .addServer('https://cloud.energiareal.mx/rafiqui-api', 'Production Server')
+    .addServer('http://localhost:3001', 'Development Server')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
