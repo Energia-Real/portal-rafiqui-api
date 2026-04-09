@@ -83,7 +83,7 @@ pipeline {
                         
                         sh """
         ssh -o StrictHostKeyChecking=no azureuser@${TARGET_VM_IP} '
-            az login --identity --client-id \$(cat /etc/azure-identity-client-id)
+            az login --identity
             az acr login --name eracr
             
             # Stop and remove existing container
@@ -91,14 +91,14 @@ pipeline {
             docker rm ${IMAGE_NAME}-${ENVIRONMENT} || true
             
             # Copy .env file to VM
-            cp ${ENV_FILE} .env-${IMAGE_NAME}-${ENVIRONMENT}
+            cp "${ENV_FILE}" ".env-${IMAGE_NAME}-${ENVIRONMENT}"
             
             # Deploy container
             docker run -d \\
                 --name ${IMAGE_NAME}-${ENVIRONMENT} \\
                 --restart unless-stopped \\
                 -p ${TARGET_VM_PRIVATE_IP}:${API_PORT}:3001 \\
-                --env-file .env-${IMAGE_NAME}-${ENVIRONMENT} \\
+                --env-file ".env-${IMAGE_NAME}-${ENVIRONMENT}" \\
                 ${ACR_URL}/${IMAGE_NAME}:latest
                 
             docker image prune -f
