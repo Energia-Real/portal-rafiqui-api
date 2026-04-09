@@ -82,7 +82,8 @@ pipeline {
                         sh "ssh-keygen -f '/var/jenkins_home/.ssh/known_hosts' -R '${TARGET_VM_IP}' || true"
                         
                         sh """
-            # Copy .env file to VM first
+            # Remove old .env file and copy new one
+            ssh -o StrictHostKeyChecking=no azureuser@${TARGET_VM_IP} "rm -f /tmp/.env-${IMAGE_NAME}-${ENVIRONMENT}" || true
             scp -o StrictHostKeyChecking=no "${ENV_FILE}" azureuser@${TARGET_VM_IP}:"/tmp/.env-${IMAGE_NAME}-${ENVIRONMENT}"
             
             ssh -o StrictHostKeyChecking=no azureuser@${TARGET_VM_IP} '
