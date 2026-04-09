@@ -12,8 +12,15 @@ COPY . .
 # Generate Prisma client
 RUN npx prisma generate
 
+# Debug: Check if source files exist
+RUN ls -la src/ || echo "src directory not found"
+
 # Build application
 RUN npm run build
+
+# Debug: Check if build succeeded
+RUN ls -la dist/ || echo "dist directory not found"
+RUN ls -la dist/main.js || echo "dist/main.js not found"
 
 # Production stage
 FROM node:20-alpine AS production
