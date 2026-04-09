@@ -83,7 +83,7 @@ pipeline {
                         
                         sh """
             # Copy .env file to VM first
-            scp -o StrictHostKeyChecking=no "${ENV_FILE}" azureuser@${TARGET_VM_IP}:".env-${IMAGE_NAME}-${ENVIRONMENT}"
+            scp -o StrictHostKeyChecking=no "${ENV_FILE}" azureuser@${TARGET_VM_IP}:"/home/azureuser/.env-${IMAGE_NAME}-${ENVIRONMENT}"
             
             ssh -o StrictHostKeyChecking=no azureuser@${TARGET_VM_IP} '
                 az login --identity
@@ -98,7 +98,7 @@ pipeline {
                     --name ${IMAGE_NAME}-${ENVIRONMENT} \\
                     --restart unless-stopped \\
                     -p ${TARGET_VM_PRIVATE_IP}:${API_PORT}:3001 \\
-                    --env-file ".env-${IMAGE_NAME}-${ENVIRONMENT}" \\
+                    --env-file "/home/azureuser/.env-${IMAGE_NAME}-${ENVIRONMENT}" \\
                     ${ACR_URL}/${IMAGE_NAME}:latest
                     
                 docker image prune -f
